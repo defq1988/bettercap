@@ -27,6 +27,11 @@ class NTLMSS < Base
       msg += "  #{'Session Key'.blue}   : #{packet.session_key_resp.map { |x| sprintf("%02X", x )}.join.yellow}"
 
       StreamLogger.log_raw( pkt, 'NTLM', msg )
+      Events::Queue.new_credentials :type => 'nltm', :packet => pkt, 
+                                    :domain => packet.domain_name,
+                                    :host => packet.host_name,
+                                    :user => packet.user_name,
+                                    :session_key => packet.session_key_resp
     end
   end
 end

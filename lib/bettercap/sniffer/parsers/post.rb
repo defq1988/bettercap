@@ -24,6 +24,8 @@ class Post < Base
         unless req.body.nil? or req.body.empty?
           StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
           StreamLogger.log_post( req )
+          Events::Queue.new_credentials :type => 'post', :packet => pkt, 
+                                        :request => req
         end
       rescue; end
     end

@@ -46,6 +46,7 @@ class Arp < Base
   # Start the ARP spoofing.
   def start
     Logger.debug "Starting ARP spoofer ( #{@ctx.options.spoof.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
+    Events::Queue.spoofer_started :type => 'arp'
 
     stop() if @running
     @running = true
@@ -87,6 +88,8 @@ class Arp < Base
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
 
     @ctx.firewall.enable_forwarding( @forwarding )
+
+    Events::Queue.spoofer_stopped :type => 'arp'
   end
 
   private

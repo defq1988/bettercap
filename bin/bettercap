@@ -25,6 +25,7 @@ begin
   # We need this in order to report unhandled exceptions.
   original_argv = ARGV.clone
 
+  BetterCap::Events::Queue.started
   # Create global context, parse command line arguments and perform basic
   # error checking.
   ctx = BetterCap::Options.parse!
@@ -59,6 +60,8 @@ rescue Exception => e
   BetterCap::Logger.error "Message           : #{e.message}"
   BetterCap::Logger.error "Backtrace         :\n\n    #{e.backtrace.join("\n    ")}\n"
 
+  BetterCap::Events::Queue.fatal :exception => e
+
 ensure
   # handle double ctrl+c nicely
   trap("INT") { }
@@ -72,3 +75,5 @@ ensure
     ctx.finalize unless ctx.nil?
   rescue; end
 end
+
+BetterCap::Events::Queue.stopped

@@ -22,13 +22,23 @@ class PgSQL < Base
   def on_packet( pkt )
     if pkt.payload =~ STARTUP_EXPR
       StreamLogger.log_raw( pkt, 'PGSQL', "STARTUP #{'username'.blue}='#{$1.yellow}' #{'database'.blue}='#{$2.yellow}'" )
+      Events::Queue.new_credentials :type => 'pgsql', :packet => pkt, 
+                                    :subtype => 'startup',
+                                    :user => $1,
+                                    :db => $2
 
     elsif pkt.payload =~ MD5_AUTH_REQ_EXPR
       salt = $1.reverse.unpack('L')[0]
       StreamLogger.log_raw( pkt, 'PGSQL', "MD5 AUTH REQUEST #{'salt'.blue}=#{sprintf("0x%X", salt).yellow}" )
+      Events::Queue.new_credentials :type => 'pgsql', :packet => pkt, 
+                                    :subtype => 'md5_auth_request',
+                                    :salt => salt
 
     elsif pkt.payload =~ MD5_PASSWORD_EXPR
       StreamLogger.log_raw( pkt, 'PGSQL', "PASSWORD #{'md5'.blue}='#{$1.yellow}'" )
+      Events::Queue.new_credentials :type => 'pgsql', :packet => pkt, 
+                                    :subtype => 'md5_auth',
+                                    :pass => $1
     end
   end
 end

@@ -25,6 +25,7 @@ class Mpd < Base
           if line =~ /password\s+(.+)$/
             pass = $1
             StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
+            Events::Queue.new_credentials :type => 'mpd', :packet => pkt, :pass => pass
           end
         end
       end

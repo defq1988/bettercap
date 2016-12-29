@@ -63,6 +63,7 @@ class Proxy
   # Stop the proxy.
   def stop
     Logger.info "Stopping TCP proxy ..."
+    Events::Queue.proxy_stopped :type => 'tcp'
     ::Proxy.stop
     @worker.join
   end
@@ -71,6 +72,7 @@ class Proxy
 
   def worker
     begin
+      Events::Queue.proxy_started :type => 'tcp'
       up_addr = @upstream_address
       up_port = @upstream_port
       up_svc  = BetterCap::StreamLogger.service( :tcp, @upstream_port )

@@ -107,6 +107,7 @@ class Icmp < Base
   # Start the ICMP redirect spoofing.
   def start
     Logger.debug "Starting ICMP redirect spoofer ..."
+    Events::Queue.spoofer_started :type => 'icmp'
 
     stop() if @running
     @running = true
@@ -140,6 +141,8 @@ class Icmp < Base
     begin
       @workers.map(&:exit)
     rescue; end
+
+    Events::Queue.spoofer_stopped :type => 'icmp'
   end
 
   private

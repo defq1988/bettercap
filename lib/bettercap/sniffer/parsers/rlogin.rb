@@ -30,12 +30,19 @@ class Rlogin < Base
           server_user = $2
           terminal = $3
           StreamLogger.log_raw( pkt, @name, "client-username=#{client_user} server-username=#{server_user} terminal=#{terminal}" )
+          Events::Queue.new_credentials :type => 'rlogin', :packet => pkt, 
+                                        :client_user => client_user,
+                                        :server_user => server_user,
+                                        :terminal => terminal
         # else, if only server username and terminal/speed were supplied...
         # regex starts at 0x00 as the first null byte is stripped from pkt.payload.to_s and the client username is empty
         elsif pkt.payload.to_s =~ /\A\x00([a-z0-9_-]+)\x00([a-z0-9_-]+\/[0-9]+)\x00\Z/i
           server_user = $1
           terminal = $2
           StreamLogger.log_raw( pkt, @name, "server-username=#{server_user} terminal=#{terminal}" )
+          Events::Queue.new_credentials :type => 'rlogin', :packet => pkt, 
+                                        :server_user => server_user,
+                                        :terminal => terminal
         end
       end
     rescue

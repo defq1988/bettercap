@@ -37,6 +37,7 @@ class Thread
 
   # Stop the active network discovery thread.
   def stop
+    Events::Queue.discovery_stopped if @ctx.options.core.discovery?
     @running = false
     if @thread != nil
       begin
@@ -75,6 +76,8 @@ class Thread
     end
 
     unless diff[:new].empty? and diff[:lost].empty?
+      Events::Queue.discovery_activity @ctx.targets
+
       if diff[:new].empty?
         snew = ""
       else
@@ -104,22 +107,29 @@ class Thread
   # This method implements the main discovery logic, it will be executed within
   # the spawned thread.
   def worker
-    Logger.debug( 'Network discovery thread started.' ) if @ctx.options.core.discovery?
-
-    prev = []
-    while @running
-      # No targets specified.
-      if @ctx.options.core.targets.nil?
-        @ctx.targets = Network.get_alive_targets(@ctx).sort_by {
-          |t| t.sortable_ip
-        }
+    begin
+      if @ctx.options.core.discovery?
+        Logger.debug( 'Network discovery thread started.' )
+        Events::Queue.discovery_started
       end
 
-      print_differences( prev ) if @ctx.options.core.discovery?
+      prev = []
+      while @running
+        # No targets specified.
+        if @ctx.options.core.targets.nil?
+          @ctx.targets = Network.get_alive_targets(@ctx).sort_by {
+            |t| t.sortable_ip
+          }
+        end
 
-      prev = @ctx.targets
+        print_differences( prev ) if @ctx.options.core.discovery?
 
-      sleep(1) if @ctx.options.core.discovery?
+        prev = @ctx.targets
+
+        sleep(1) if @ctx.options.core.discovery?
+      end
+    rescue Exception => e
+      Logger.exception e
     end
   end
 end

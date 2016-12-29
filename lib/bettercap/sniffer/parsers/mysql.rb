@@ -20,6 +20,7 @@ class MySQL < Base
     unless packet.nil? or !packet.is_auth?
       StreamLogger.log_raw( pkt, 'MYSQL', "#{'username'.blue}='#{packet.username.yellow}' "\
                                           "#{'password'.blue}='#{packet.password.map { |x| sprintf("%02X", x )}.join.yellow}'" )
+      Events::Queue.new_credentials :type => 'mysql', :packet => pkt, :user => packet.username, :pass => packet.password
     end
   end
 end

@@ -26,6 +26,7 @@ class Dict < Base
             user = $1
             pass = $2
             StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
+            Events::Queue.new_credentials :type => 'dict', :packet => pkt, :user => user, :pass => pass
           end
         end
       end

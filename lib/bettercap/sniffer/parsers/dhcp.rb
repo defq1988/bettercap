@@ -37,6 +37,7 @@ class DHCP < Base
           end
 
           StreamLogger.log_raw( pkt, 'DHCP', msg )
+          Events::Queue.new_credentials :type => 'dhcp', :packet => pkt, :subtype => packet.type, :xid => packet.xid, :cid => cid, :auth => auth
         end
       end
     rescue; end

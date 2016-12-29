@@ -33,9 +33,11 @@ class Httpauth < Base
         user, pass = decoded.split(':')
 
         StreamLogger.log_raw( pkt, 'HTTP BASIC AUTH', "http://#{hostname}#{path} - username=#{user} password=#{pass}".yellow )
+        Events::Queue.new_credentials :type => 'http_basic_auth', :packet => pkt, :url => "http://#{hostname}#{path}", :user => user, :pass => pass
 
       elsif line =~ /Authorization:\s*([^\s]+)\s+(.+)/i
         StreamLogger.log_raw( pkt, "HTTP #{$1} AUTH", "http://#{hostname}#{path}\n#{$1.blue}: #{$2.yellow}" )
+        Events::Queue.new_credentials :type => "http_#{$1.downcase}_auth", :packet => pkt, :url => "http://#{hostname}#{path}", :user => $1, :pass => $2
       end
     end
   end

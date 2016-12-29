@@ -28,6 +28,7 @@ class Sniffer
   def self.start( ctx )
     Thread.new {
       Logger.debug 'Starting sniffer ...'
+      Events::Queue.sniffer_started
 
       setup( ctx )
 
@@ -72,6 +73,7 @@ class Sniffer
       total = skipped + processed
 
       Logger.info "[#{'SNIFFER'.green}] #{total} packets processed in #{delta} ms ( #{skipped} skipped packets, #{processed} processed packets )"
+      Events::Queue.sniffer_stopped
     }
   end
 

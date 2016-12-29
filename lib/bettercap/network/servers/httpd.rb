@@ -36,6 +36,7 @@ class HTTPD
   # Start the server.
   def start
     Logger.info "[#{'HTTPD'.green}] Starting on port #{@port} and path #{@path} ..."
+    Events::Queue.httpd_started
     @thread = Thread.new {
       @server.start
     }
@@ -47,6 +48,8 @@ class HTTPD
 
     @server.stop
     @thread.join
+
+    Events::Queue.httpd_stopped
   end
 end
 

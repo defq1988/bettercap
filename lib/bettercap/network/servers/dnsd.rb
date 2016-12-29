@@ -76,6 +76,7 @@ class DNSD
   # Start the server.
   def start
     Logger.info "[#{'DNS'.green}] Starting on #{@address}:#{@port} ..."
+    Events::Queue.dnsd_started
 
     options = {
       :listen => @ifaces,
@@ -107,7 +108,9 @@ class DNSD
   end
 
   # Stop the server.
-  def stop; end
+  def stop
+    Events::Queue.dnsd_stopped 
+  end
 
   # Parse hosts from +filename+, example host file:
   #

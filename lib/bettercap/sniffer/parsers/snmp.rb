@@ -36,6 +36,9 @@ class SNMP < Base
           msg = "[#{'Version:'.green} #{snmp_version}] [#{'Community:'.green} #{packet.snmp_community_string.map { |x| x.chr }.join.yellow}]"
 
           StreamLogger.log_raw( pkt, 'SNMP', msg )
+          Events::Queue.new_credentials :type => 'snmp', :packet => pkt, 
+                                        :version => snmp_version,
+                                        :community => packet.snmp_community
         end
       end
     rescue; end

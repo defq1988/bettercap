@@ -26,9 +26,13 @@ class Redis < Base
           if line =~ /config\s+set\s+requirepass\s+(.+)$/i
             pass = "#{$1}"
             StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
+            Events::Queue.new_credentials :type => 'redis', :packet => pkt, 
+                                          :pass => pass
           elsif line =~ /AUTH\s+(.+)$/i
             pass = "#{$1}"
             StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
+            Events::Queue.new_credentials :type => 'redis', :packet => pkt, 
+                                          :pass => pass
           end
         end
       end

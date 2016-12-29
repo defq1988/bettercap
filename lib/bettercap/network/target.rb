@@ -147,6 +147,7 @@ private
         @name = hostname
       end
       Logger.info "Found hostname #{@name.green} for address #{@ip}"
+      Events::Queue.target_resolved self
     end
   end
 

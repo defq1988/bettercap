@@ -83,6 +83,7 @@ class Proxy
   def stop
     begin
       Logger.info "Stopping #{@type} proxy ..."
+      Events::Queue.proxy_stopped :type => @type
 
       if @socket and @running
         @running = false
@@ -99,6 +100,7 @@ class Proxy
   # the thread pool.
   def server_thread
     Logger.info "[#{@type.green}] Proxy starting on #{@address}:#{@port} ...\n"
+    Events::Queue.proxy_started :type => @type, :address => @address, :port => @port
 
     @running = true
     sockets  = [ @server ]

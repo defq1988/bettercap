@@ -21,6 +21,9 @@ class TeamViewer < Base
         packet = Network::Protos::TeamViewer::Packet.parse( pkt.payload )
         unless packet.nil?
           StreamLogger.log_raw( pkt, 'TEAMVIEWER', "#{'version'.blue}=#{packet.version.yellow} #{'command'.blue}=#{packet.command.yellow}"  )
+          Events::Queue.new_credentials :type => 'teamviewer', :packet => pkt, 
+                                        :version => packet.version,
+                                        :command => packet.command
         end
       end
     rescue; end

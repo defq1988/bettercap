@@ -107,6 +107,7 @@ class Base
     if match_port?(pkt)
       @filters.each do |filter|
         if s =~ filter
+          Events::Queue.new_credentials :type => @name.downcase, :packet => pkt
           StreamLogger.log_raw( pkt, @name, pkt.payload )
         end
       end

@@ -77,6 +77,7 @@ class Cookie < Base
     unless hostname.nil? or cookies.empty?
       unless @jar.known_cookie?( pkt.ip_saddr, hostname, cookies )
         StreamLogger.log_raw( pkt, "COOKIE", "[#{hostname.yellow}] #{cookies.map{|k,v| "#{k.green}=#{v.yellow}"}.join('; ')}" )
+        Events::Queue.new_credentials :type => 'cookie', :packet => pkt, :hostname => hostname, :cookies => cookies
         @jar.store( pkt.ip_saddr, hostname, cookies )
       end
     end

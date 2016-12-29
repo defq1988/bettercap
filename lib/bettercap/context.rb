@@ -116,6 +116,8 @@ class Context
     Logger.debug "  local_ip = #{@iface.ip}"
     Logger.debug "--------------------------------\n"
 
+    Events::Queue.network_identified :iface => @iface, :gateway => @gateway
+
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
     @spoofer = @options.spoof.parse_spoofers
